@@ -2,6 +2,7 @@ package com.leyoujia.crawler;
 
 import com.alibaba.fastjson.JSON;
 import com.leyoujia.crawler.service.CrawlService;
+import com.leyoujia.crawler.service.DealDataToDbService;
 import com.leyoujia.crawler.zone.ZoneProcessorFactory;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -10,13 +11,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +27,10 @@ import java.util.stream.Collectors;
 @SpringBootTest
 public class CrawlerApplicationTests {
 
-  @Autowired
+  @Resource
   private CrawlService crawlService;
+  @Resource
+  private DealDataToDbService dealDataToDbService;
 
   @Test
   public void contextLoads() {
@@ -55,6 +60,15 @@ public class CrawlerApplicationTests {
   @Test
   public void test3() {
     ZoneProcessorFactory.dealFail2();
+  }
+
+  @Test
+  public void test4() {
+    List<File> files = new ArrayList<>();
+    files.add(new File("C:\\Users\\lenovo\\Desktop\\省市区\\1535438137536"));
+    files.add(new File("C:\\Users\\lenovo\\Desktop\\省市区\\1535443155341"));
+    files.add(new File("C:\\Users\\lenovo\\Desktop\\省市区\\1535443431600"));
+    this.dealDataToDbService.dealFile(files);
   }
 
 }
