@@ -15,11 +15,12 @@ public class AreaZoneProcessor extends AbstructZonProcessor {
 
   @Override
   public boolean isValidUrl(String url) {
-    return false;
+    url = url.replaceAll("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/", "");
+    return !url.contains("index") && url.split("/").length == 3;
   }
 
   @Override
   public List<String> process(Document document) {
-    return null;
+    return this.process(document, "tr.countytr", this::convert1);
   }
 }

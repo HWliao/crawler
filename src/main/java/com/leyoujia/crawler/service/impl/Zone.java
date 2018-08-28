@@ -28,6 +28,26 @@ public class Zone implements Serializable {
    */
   private String name;
 
+  private String subUrl;
+
+  private String streetCode;
+
+  public String getStreetCode() {
+    return streetCode;
+  }
+
+  public void setStreetCode(String streetCode) {
+    this.streetCode = streetCode;
+  }
+
+  public String getSubUrl() {
+    return subUrl;
+  }
+
+  public void setSubUrl(String subUrl) {
+    this.subUrl = subUrl;
+  }
+
   public String getPageUrl() {
     return pageUrl;
   }

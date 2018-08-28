@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import java.text.DecimalFormat;
 
 /**
  * @author lhw
@@ -17,9 +15,8 @@ public class FileProcessor {
   private PrintWriter pw;
 
   public FileProcessor(String folder) throws FileNotFoundException, UnsupportedEncodingException {
-    String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-    String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-    String fileName = uuid + now;
+    DecimalFormat df = new DecimalFormat("#.##");
+    String fileName = df.format(System.currentTimeMillis());
     File file = new File(folder + "/" + fileName);
     this.pw = new PrintWriter(file, "UTF-8");
   }
@@ -32,8 +29,8 @@ public class FileProcessor {
     this.pw.flush();
   }
 
-  public void destroy(){
-    if(this.pw != null){
+  public void destroy() {
+    if (this.pw != null) {
       this.pw.close();
     }
   }

@@ -1,12 +1,15 @@
 package com.leyoujia.crawler.zone;
 
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +63,33 @@ public class ZoneProcessorFactory {
   }
 
 
+  public static void dealFail1() throws IOException {
+    String failFileName = BASE_FOLDER + "/fail";
+    String urlStrs = FileUtils.readFileToString(new File(failFileName), "utf-8");
+    List<String> urls = JSON.parseArray(urlStrs, String.class);
+    try {
+      process(urls);
+    } finally {
+      logger.info("total:" + total.get() + ",success:" + success.get() + ",fail:" + fail.get() + ",failUls:" + JSON.toJSONString(failUrls));
+    }
+    fileProcessor.destroy();
+  }
+
+  public static void dealFail2() {
+    List<String> urls = JSON.parseArray("[\"http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/51/10/24/511024105.html\",\"http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/52/03/24/520324111.html\"]", String.class);
+    try {
+      process(urls);
+    } finally {
+      logger.info("total:" + total.get() + ",success:" + success.get() + ",fail:" + fail.get() + ",failUls:" + JSON.toJSONString(failUrls));
+    }
+    fileProcessor.destroy();
+  }
+
   private static void process(List<String> urls) {
     if (urls == null || urls.size() == 0) {
       return;
     }
+    List<String> totalUrls = new ArrayList<>();
     for (String url : urls) {
       logger.info(url);
       total.getAndIncrement();
@@ -73,17 +99,21 @@ public class ZoneProcessorFactory {
         if (!zoneProcessor.isPresent()) {
           throw new RuntimeException("无效url!");
         }
-        Document document = Jsoup.connect(url).get();
+        Document document = Jsoup
+          .connect(url)
+          .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36")
+          .timeout(1000)
+          .get();
         List<String> subUrls = zoneProcessor.get().process(document);
         success.getAndIncrement();
-
-        process(subUrls);
+        totalUrls.addAll(subUrls);
       } catch (Exception e) {
         logger.error("@process:" + url, e);
         fail.getAndIncrement();
         failUrls.add(url);
       }
     }
+    process(totalUrls);
   }
 
   private static Optional<ZoneProcessor> createProcessor(String url) {

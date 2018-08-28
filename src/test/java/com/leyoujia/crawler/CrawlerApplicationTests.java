@@ -47,4 +47,14 @@ public class CrawlerApplicationTests {
     ZoneProcessorFactory.start();
   }
 
+  @Test
+  public void test2() throws IOException {
+    ZoneProcessorFactory.dealFail1();
+  }
+
+  @Test
+  public void test3() {
+    ZoneProcessorFactory.dealFail2();
+  }
+
 }
